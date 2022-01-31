@@ -7,6 +7,7 @@ import sys
 CSV_DELIMITER = '|'
 
 WORD = 'Word'
+PRONUNCIATION = 'Pronunciation'
 POS = "POS"
 DEFINITION = 'Definition'
 SYNONYMS = 'Synonyms'
@@ -88,7 +89,7 @@ print(f"Getting defintions for terms: {terms}")
 
 # Prep the file
 file_path = "output.csv"
-columns = [WORD, POS, DEFINITION, SYNONYMS, ANTONYMS, ORIGIN, WOF, STEM, EXAMPLE]
+columns = [WORD, PRONUNCIATION, POS, DEFINITION, SYNONYMS, ANTONYMS, ORIGIN, WOF, STEM, EXAMPLE]
 write_to_file(file_path, CSV_DELIMITER.join(columns), True)
 
 for term in terms:
@@ -116,6 +117,7 @@ for term in terms:
     for word in api_data:
         for meaning in word['meanings']:
             word_entry[WORD] = word['word']
+            word_entry[PRONUNCIATION] = word['phonetic']
             word_entry[POS] = meaning["partOfSpeech"]
             word_entry[DEFINITION] = meaning['definitions'][0]['definition']
             word_entry[SYNONYMS] = ','.join(meaning['definitions'][0]['synonyms'])
