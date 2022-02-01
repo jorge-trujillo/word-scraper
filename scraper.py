@@ -122,7 +122,10 @@ for term in terms:
             word_entry[DEFINITION] = meaning['definitions'][0]['definition']
             word_entry[SYNONYMS] = ','.join(meaning['definitions'][0]['synonyms'])
             word_entry[ANTONYMS] = ','.join(meaning['definitions'][0]['antonyms'])
-            word_entry[ORIGIN] = word['origin']
+            if 'origin' in word:
+                word_entry[ORIGIN] = word['origin']
+            else:
+                word_entry[ORIGIN] = 'N/A'
             word_entry[WOF] = dictionary_data[WOF]
             word_entry[STEM] = 'N/A'
             if 'example' in meaning['definitions'][0]:
