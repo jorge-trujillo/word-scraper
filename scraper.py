@@ -94,7 +94,7 @@ write_to_file(file_path, CSV_DELIMITER.join(columns), True)
 
 for term in terms:
     # Get the page data
-    url = "https://www.dictionary.com/browse/illiterate"
+    url = f"https://www.dictionary.com/browse/{term}"
     page_data = get_page_data(url)
     dictionary_data = parse_dictionary(page_data)
 
