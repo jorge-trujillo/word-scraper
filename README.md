@@ -9,3 +9,7 @@ There is a companion gist here: https://gist.github.com/jorge-trujillo/eaf0a4f11
 ```bash
 python3 scraper.py word1 word2
 ```
+
+## JSON Lookup
+
+You can get the dictionary file here: https://github.com/matthewreagan/WebstersEnglishDictionary/blob/master/dictionary.json

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import time
 import requests
 from bs4 import BeautifulSoup
@@ -76,14 +77,33 @@ def write_to_file(file_path, text, overwrite=False):
         # Writing data to a file
         file.write(text + "\n")
 
+def load_terms(file_path):
+    
+    terms = []
+    with open(file_path,'r') as file:
+        for line in file:
+            terms.append(line)
+    
+    return terms
+
+def print_usage():
+    print("Usage: \n 1) scraper.py -w word1 word2 word3.... \n 2) scraper.py -f file.csv")
+    sys.exit(1)
 
 ## Main
 # Get arguments
-terms = sys.argv[1:]
+if len(sys.argv) < 2:
+    print_usage()
+
+if (sys.argv[1] == '-w'):
+    terms = sys.argv[1:]
+elif (sys.argv[1] == '-f'):
+    terms = load_terms(sys.argv[2])
+else:
+    print_usage()
 
 if len(terms) <= 0:
-    print("Usage: scraper.py <term1> <term2> ...")
-    sys.exit(1)
+    print_usage()
 
 print(f"Getting defintions for terms: {terms}")
 
@@ -100,12 +120,14 @@ for term in terms:
 
     # Get API data. Do some retries since it is unreliable
     api_data = None
-    max_retries = 5
-    while api_data is None:
+    max_retries = 10
+    retries = 0
+    while api_data is None and retries < max_retries:
         api_data = get_dictionary_api(term)
         if api_data is None:
             print('Error getting API data, retrying in 5 seconds')
             time.sleep(5)
+            retries += 1
 
     if (api_data is None):
         print("Could get any data from the API")
@@ -117,17 +139,15 @@ for term in terms:
     for word in api_data:
         for meaning in word['meanings']:
             word_entry[WORD] = word['word']
-            word_entry[PRONUNCIATION] = word['phonetic']
-            word_entry[POS] = meaning["partOfSpeech"]
+            word_entry[PRONUNCIATION] = word.get('phonetic') or 'N/A'
+            word_entry[POS] = meaning.get('partOfSpeech') or 'N/A'
             word_entry[DEFINITION] = meaning['definitions'][0]['definition']
             word_entry[SYNONYMS] = ','.join(meaning['definitions'][0]['synonyms'])
             word_entry[ANTONYMS] = ','.join(meaning['definitions'][0]['antonyms'])
-            if 'origin' in word:
-                word_entry[ORIGIN] = word['origin']
-            else:
-                word_entry[ORIGIN] = 'N/A'
+            word_entry[ORIGIN] = word.get('origin') or 'N/A'
             word_entry[WOF] = dictionary_data[WOF]
             word_entry[STEM] = 'N/A'
+            
             if 'example' in meaning['definitions'][0]:
                 word_entry[EXAMPLE] = meaning['definitions'][0]['example']
             else:
